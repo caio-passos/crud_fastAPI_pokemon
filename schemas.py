@@ -14,13 +14,6 @@ class pokemon(BaseModel):
     speed: int
 
 
-class pokemonDB(pokemon):
-    ID: int
-
-    class Config:
-        orm_mode = True
-
-
 class pokemonsUpdate(pokemon):
     pokemon_name: Optional[str]
     HP: Optional[int]

@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, String
 
 from .database import Base
 
+from pydantic import BaseModel
+
 
 class pokemonData(Base):
     __tablename__ = "pokemons"

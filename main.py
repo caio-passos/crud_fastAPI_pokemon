@@ -1,10 +1,10 @@
 from http import HTTPStatus
 from sqlalchemy.orm import Session
-from dividendio.database import PokemonDBSession
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from .database import PokemonDBSession, engine, Base
-from dividendio.schemas import pokemonDB, pokemon
 from . import crud, models, schemas
+from .models import pokemonData
+from pydantic import BaseModel
 
 Base.metadata.create_all(bind=engine)
 
@@ -20,16 +20,12 @@ def get_db():
         # dependency
 
 
-"""@app.get('/', status_code=HTTPStatus.OK, response_model=Message)
-def read_root():
-    return {'message': 'Olá Mundo!'}
-"""
-
-
-@app.get("/Pokemonslist/", response_model=list[schemas.pokemon])
-def Pokemon(skip: int = 0, limit: int = 100, db: PokemonDBSession = Depends(get_db)):
-    pokemon = crud.get_allpokemonsDB(db, skip=skip, limit=limit)
-    return pokemon
+@app.get("/pokemonslist")
+def Pokemon(db: PokemonDBSession = Depends(get_db)):
+    pokemons = crud.get_allpokemonsDB(db)
+    if not pokemons:
+        raise HTTPException(status_code=404, detail="DB is empty")
+    return dict(pokemons=pokemons)
 
 
 @app.post("/addPokemon/", response_model=schemas.pokemon)
